@@ -23,33 +23,50 @@
 
 class ToDoList:
     def __init__(self):
-        self.task_list = {}
-        self.task_number = 0
+        self.task_storage = []
+
+    def get_task_store(self):  # проверяет, пустой ли список задач
+        if not self.task_storage:
+            print("\nСписок задач пуст!")
+        return self.task_storage
 
     def add_task(self):  # добавляет новую задачу в список задач
-        self.task_number += 1
         task = input("\nНовая задача:\n>> ")
-        self.task_list[self.task_number] = {
-            "ballot_box": "\N{BALLOT BOX}",
-            "task": task
-        }
-        print(f"Задача добавлена в список задач под №{self.task_number}.")
+        self.task_storage.append({
+            "\N{BALLOT BOX}": task
+        })
+        print(f"Задача добавлена в список задач "
+              f"под №{len(self.task_storage)}.")
 
     def complete_task(self):  # помечает указанную задачу как выполненную
-        task_number = int(input("\nВведите номер задачи, "
-                                "чтобы пометить как выполненную:\n>> "))
-        self.task_list[task_number] = {
-            "ballot_box": "\N{BALLOT BOX WITH CHECK}",
-            "task": self.task_list[task_number].get("task")
-        }
-        print(f"Задача под №{task_number} помечена как выполненная.")
+        if self.get_task_store():
+            task_number = int(input("\nВведите номер задачи, "
+                                    "чтобы пометить как выполненную:\n>> "))
+            if task_number <= 0:
+                raise
+            else:
+                self.task_storage[task_number - 1] = {
+                    "\N{BALLOT BOX WITH CHECK}":
+                        self.task_storage[task_number - 1].popitem()[1]
+                }
+                print(f"Задача под №{task_number} помечена как выполненная.")
 
     def remove_task(self):  # удаляет указанную задачу из списка
-        task_number = int(input("\nВведите номер задачи для удаления:\n>> "))
-        del self.task_list[task_number]
-        print(f"Задача под №{task_number} удалена.")
+        if self.get_task_store():
+            task_number = int(input(
+                "\nВведите номер задачи для удаления:\n>> "
+            ))
+            if task_number <= 0:
+                raise
+            else:
+                del self.task_storage[task_number - 1]
+                print(f"Задача под №{task_number} удалена.")
 
     def get_list_tasks(self):  # выводит список всех задач
-        print("\nСписок задач:")
-        for key, value in self.task_list.items():
-            print(f"{value["ballot_box"]} Задача №{key}: {value["task"]}")
+        if self.get_task_store():
+            print("\nСписок задач:")
+            sequence_number = 0
+            for task in self.task_storage:
+                sequence_number += 1
+                for key, value in task.items():
+                    print(f"{key} Задача №{sequence_number}: {value}")
